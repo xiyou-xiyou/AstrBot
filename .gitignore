@@ -13,6 +13,9 @@ uv.lock
 
 # Logs and temporary files
 botpy.log
+*.log
+.pytest_cache/
+.ruff_cache/
 logs/
 temp
 cookies.json

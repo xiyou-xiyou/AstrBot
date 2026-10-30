@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Enhance Memory RAG Console</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="bg-grid"></div>
+    <div class="bg-glow bg-glow-a"></div>
+    <div class="bg-glow bg-glow-b"></div>
+
+    <div id="app">
+      <section id="login-view" class="view active">
+        <div class="login-stage">
+          <div class="login-card panel">
+            <p class="eyebrow">Memory RAG WebUI</p>
+            <h1>Enhance RAG Console</h1>
+            <p class="muted">Secure access for memory exploration, filtering and cleanup.</p>
+            <form id="login-form">
+              <label for="password">Access Password</label>
+              <input id="password" type="password" autocomplete="current-password" required />
+              <button type="submit">Log In</button>
+              <p id="login-error" class="error"></p>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <section id="dashboard-view" class="view">
+        <div class="dashboard-shell">
+          <header class="topbar panel">
+            <div>
+              <p class="eyebrow">Console Overview</p>
+              <h2>RAG Memory Dashboard</h2>
+              <p class="muted">Read, filter and clean persisted memories</p>
+              <p class="muted">Display Timezone: <span id="timezone-tag">-</span></p>
+            </div>
+            <div class="topbar-actions">
+              <button id="cleanup-btn" class="ghost">Cleanup</button>
+              <button id="refresh-btn" class="ghost">Refresh</button>
+              <button id="logout-btn" class="ghost">Logout</button>
+            </div>
+          </header>
+
+          <section class="stats-grid">
+            <article class="stat panel">
+              <span>Total Memories</span>
+              <strong id="stat-total">-</strong>
+            </article>
+            <article class="stat panel">
+              <span>Group Scopes</span>
+              <strong id="stat-scopes">-</strong>
+            </article>
+            <article class="stat panel">
+              <span>Group IDs</span>
+              <strong id="stat-groups">-</strong>
+            </article>
+            <article class="stat panel">
+              <span>Role IDs</span>
+              <strong id="stat-roles">-</strong>
+            </article>
+          </section>
+
+          <section class="filters panel">
+            <label class="field">
+              <span>Keyword / Memory ID</span>
+              <input id="keyword-input" type="text" placeholder="Type keyword or memory ID" />
+            </label>
+            <label class="field">
+              <span>Group Scope</span>
+              <input id="scope-input" type="text" placeholder="Optional" />
+            </label>
+            <label class="field">
+              <span>Role ID</span>
+              <input id="role-input" type="text" placeholder="Optional" />
+            </label>
+            <div class="filter-actions">
+              <button id="search-btn">Search</button>
+              <button id="reset-btn" class="ghost">Reset</button>
+            </div>
+          </section>
+
+          <section class="table-panel panel">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Content</th>
+                  <th>Group Scope</th>
+                  <th>Roles</th>
+                  <th id="time-column-title">Time</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="memory-body">
+                <tr>
+                  <td colspan="6" class="center muted">No data</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section class="pager panel">
+            <button id="prev-btn" class="ghost">Prev</button>
+            <span id="page-info">Page 1</span>
+            <button id="next-btn" class="ghost">Next</button>
+            <label for="page-size">Size</label>
+            <select id="page-size">
+              <option value="10">10</option>
+              <option value="20" selected>20</option>
+              <option value="50">50</option>
+            </select>
+          </section>
+        </div>
+      </section>
+    </div>
+
+    <aside id="detail-drawer" class="drawer">
+      <div class="drawer-header">
+        <h3>Memory Detail</h3>
+        <button id="drawer-close" class="ghost">Close</button>
+      </div>
+      <pre id="drawer-content">{}</pre>
+    </aside>
+
+    <div id="toast" class="toast"></div>
+    <script src="/static/app.js"></script>
+  </body>
+</html>

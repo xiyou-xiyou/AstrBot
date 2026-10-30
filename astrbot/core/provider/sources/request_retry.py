@@ -48,6 +48,8 @@ def _is_retryable_provider_request_error(
     error_type_name = type(error).__name__
     if error_type_name in {"APIConnectionError", "APITimeoutError"}:
         return True
+    if error_type_name == "APIError" and "overloaded" in str(error).lower():
+        return True
 
     status_code = _get_status_code(error)
     if status_code is None:

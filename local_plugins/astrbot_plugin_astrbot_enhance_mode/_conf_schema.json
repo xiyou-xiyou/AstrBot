@@ -1,0 +1,316 @@
+{
+    "group_history_enhancement": {
+        "description": "群聊历史增强",
+        "hint": "以增强格式记录群聊消息并注入 LLM 上下文。依赖「群聊功能增强 -> React 模式」开启。",
+        "type": "object",
+        "items": {
+            "enable": {
+                "description": "启用",
+                "hint": "启用群聊历史增强。建议关闭 AstrBot 内置的群聊上下文感知功能以避免重复注入。",
+                "type": "bool",
+                "default": false
+            },
+            "max_messages": {
+                "description": "最大消息数",
+                "hint": "每个会话保留的最大历史消息条数。",
+                "type": "int",
+                "default": 300
+            },
+            "include_sender_id": {
+                "description": "包含发送者 ID",
+                "hint": "在历史消息格式中写入发送者用户 ID。",
+                "type": "bool",
+                "default": true
+            },
+            "include_role_tag": {
+                "description": "包含角色标签",
+                "hint": "在历史消息格式中写入 admin/member 角色标记。",
+                "type": "bool",
+                "default": true
+            },
+            "image_caption": {
+                "description": "图片转述",
+                "hint": "启用按需图片转述能力。历史默认写入 [Image]，模型可通过工具按需补全描述。",
+                "type": "bool",
+                "default": false
+            },
+            "image_caption_provider_id": {
+                "description": "图片转述提供商 ID",
+                "hint": "用于图片转述的 LLM 提供商 ID，留空使用默认提供商。",
+                "type": "string",
+                "_special": "select_provider",
+                "default": ""
+            },
+            "image_caption_prompt": {
+                "description": "图片转述提示词",
+                "hint": "发送给图片转述模型的提示词。",
+                "type": "string",
+                "default": "Please describe the image using Chinese."
+            }
+        }
+    },
+    "active_reply": {
+        "description": "主动回复",
+        "hint": "在群聊中主动回复（无需被 @）。依赖「群聊功能增强 -> React 模式」开启。",
+        "type": "object",
+        "items": {
+            "enable": {
+                "description": "启用",
+                "hint": "启用主动回复。建议关闭 AstrBot 内置主动回复与内置引用回复（reply_with_quote）。",
+                "type": "bool",
+                "default": false
+            },
+            "mode": {
+                "description": "触发模式",
+                "hint": "可选 probability（概率触发）或 model_choice（模型选择触发）。",
+                "type": "string",
+                "default": "probability"
+            },
+            "possibility": {
+                "description": "回复概率",
+                "hint": "当 mode=probability 时生效，范围建议 0.0 - 1.0。",
+                "type": "float",
+                "default": 0.1
+            },
+            "model_stack_size": {
+                "description": "模型触发栈长度",
+                "hint": "当 mode=model_choice 时生效，累计到该条数后触发一次模型判定。",
+                "type": "int",
+                "default": 8
+            },
+            "model_history_messages": {
+                "description": "模型判定历史条数",
+                "hint": "当 mode=model_choice 时生效，判定时附带的额外历史消息条数（0 表示不附带）。",
+                "type": "int",
+                "default": 0
+            },
+            "model_choice_provider_id": {
+                "description": "模型判定提供商 ID",
+                "hint": "当 mode=model_choice 时生效。用于“是否主动回复”判定，留空使用当前会话默认提供商。",
+                "type": "string",
+                "_special": "select_provider",
+                "default": ""
+            },
+            "model_choice_prompt": {
+                "description": "模型判定提示词",
+                "hint": "可使用 {stack_size}、{messages}、{history_count}、{history_context}、{persona_name}、{persona_mask} 占位符，模型需只输出 REPLY 或 SKIP。",
+                "type": "string",
+                "default": "你当前的人格面具是：{persona_name}\n人格设定如下：\n{persona_mask}\n\n你正在群聊中扮演助手。以下是最近 {stack_size} 条群聊消息：\n{messages}\n\n额外历史上下文（最近 {history_count} 条）：\n{history_context}\n\n请严格站在该人格的角度判断你是否应该主动回复。如果需要回复，只输出 REPLY；如果不需要回复，只输出 SKIP。"
+            },
+            "whitelist": {
+                "description": "白名单",
+                "hint": "英文逗号分隔的 unified_msg_origin 或群 ID。留空表示所有群可触发。",
+                "type": "string",
+                "default": ""
+            }
+        }
+    },
+    "group_features": {
+        "description": "群聊功能增强",
+        "hint": "与群聊交互行为相关的增强能力（React 模式、角色注入、Mention/Quote 标签解析）。",
+        "type": "object",
+        "items": {
+            "react_mode_enable": {
+                "description": "React 模式",
+                "hint": "启用后，群聊历史增强与主动回复能力才会生效。",
+                "type": "bool",
+                "default": false
+            },
+            "role_display": {
+                "description": "角色显示",
+                "hint": "在 system_reminder 中注入用户角色（admin/member），需开启 AstrBot 内置用户识别。",
+                "type": "bool",
+                "default": true
+            },
+            "mention_parse": {
+                "description": "Mention/Quote 标签解析",
+                "hint": "解析 LLM 输出中的 <mention id=\"用户ID\"/> 与 <quote id=\"消息ID\"/>，并转换为平台消息组件。",
+                "type": "bool",
+                "default": true
+            },
+            "ban_control_enable": {
+                "description": "封禁控制",
+                "hint": "启用后模型可通过 LLM Tool（enhance_ban_user / enhance_unban_user）控制封禁；被封禁用户消息会被直接拦截。",
+                "type": "bool",
+                "default": true
+            },
+            "ban_max_duration_sec": {
+                "description": "最大封禁时长(秒)",
+                "hint": "模型通过 enhance_ban_user 工具设置的单次封禁时长上限（秒），超出会自动截断到该值。",
+                "type": "int",
+                "default": 2592000
+            },
+            "ban_allow_admin": {
+                "description": "允许封禁管理员",
+                "hint": "关闭时，AstrBot 内部判定为 role=admin 的用户不会被封禁工具封禁。",
+                "type": "bool",
+                "default": false
+            }
+        }
+    },
+    "web_search": {
+        "description": "联网搜索工具",
+        "hint": "为模型提供 `grok_web_search` 工具，用于实时检索外部信息。仅使用指定 provider，不跟随当前会话 provider。",
+        "type": "object",
+        "items": {
+            "enable": {
+                "description": "启用",
+                "hint": "开启后注册并允许调用 `grok_web_search`。",
+                "type": "bool",
+                "default": false
+            },
+            "provider_id": {
+                "description": "搜索提供商 ID",
+                "hint": "用于执行联网搜索的 provider ID。留空时工具会报错并拒绝调用。",
+                "type": "string",
+                "_special": "select_provider",
+                "default": ""
+            },
+            "system_prompt": {
+                "description": "搜索系统提示词",
+                "hint": "用于约束搜索结果输出格式（默认要求返回 JSON）。",
+                "type": "string",
+                "default": "You are a web research assistant. Use live web search/browsing when answering. Return ONLY a single JSON object with keys: content (string), sources (array of objects with url/title/snippet when possible). Keep content concise and evidence-backed. IMPORTANT: Do NOT use Markdown formatting in the content field - use plain text only."
+            },
+            "timeout_sec": {
+                "description": "搜索超时(秒)",
+                "hint": "单次搜索调用最大等待时间。",
+                "type": "float",
+                "default": 60
+            },
+            "request_mode": {
+                "description": "请求模式",
+                "hint": "可选: auto / responses / chat_completions。auto 会先尝试 responses，再回退 chat_completions。",
+                "type": "string",
+                "default": "auto"
+            },
+            "base_url_override": {
+                "description": "Base URL 覆盖",
+                "hint": "可选。留空时使用 provider 的 api_base；填写后仅 grok_web_search 使用该 base。",
+                "type": "string",
+                "default": ""
+            },
+            "show_sources": {
+                "description": "输出来源",
+                "hint": "开启后在工具返回中附带来源 URL。",
+                "type": "bool",
+                "default": false
+            },
+            "max_sources": {
+                "description": "最多来源条数",
+                "hint": "`show_sources=true` 时生效。0 表示不限制。",
+                "type": "int",
+                "default": 5
+            }
+        }
+    },
+    "memory_rag": {
+        "description": "记忆 RAG",
+        "hint": "供 LLM Tool 使用的可检索记忆库，支持 embedding 召回与时间/角色/群聊过滤。",
+        "type": "object",
+        "items": {
+            "enable": {
+                "description": "启用",
+                "hint": "关闭后将停用 enhance_memory_rag_write / enhance_memory_rag_read。",
+                "type": "bool",
+                "default": true
+            },
+            "embedding_provider_id": {
+                "description": "Embedding Provider ID",
+                "hint": "用于记忆向量化。留空时自动使用第一个可用 embedding provider。",
+                "type": "string",
+                "_special": "select_provider:embedding",
+                "default": ""
+            },
+            "default_recall_k": {
+                "description": "默认召回数量",
+                "hint": "当工具调用未指定 embedding_recall_k 时的默认语义召回条数。",
+                "type": "int",
+                "default": 20
+            },
+            "max_return_results": {
+                "description": "最大返回条数",
+                "hint": "工具单次最多返回多少条结果（防止超长输出）。",
+                "type": "int",
+                "default": 200
+            }
+        }
+    },
+    "memory_rag_webui": {
+        "description": "记忆 RAG 可视化",
+        "hint": "为记忆 RAG 提供独立 WebUI 管理面板（登录、筛选、分页浏览、详情查看、删除）。",
+        "type": "object",
+        "items": {
+            "enable": {
+                "description": "启用 WebUI",
+                "hint": "启用后会启动独立 HTTP 服务。",
+                "type": "bool",
+                "default": false
+            },
+            "host": {
+                "description": "监听地址",
+                "hint": "127.0.0.1 仅本机访问；0.0.0.0 允许局域网访问。",
+                "type": "string",
+                "default": "127.0.0.1"
+            },
+            "port": {
+                "description": "监听端口",
+                "hint": "WebUI 服务端口，需避免和其他服务冲突。",
+                "type": "int",
+                "default": 8899
+            },
+            "access_password": {
+                "description": "访问密码",
+                "hint": "登录 WebUI 所需密码。留空时会自动生成随机密码并写入日志。",
+                "type": "string",
+                "obvious_hint": true,
+                "default": ""
+            },
+            "session_timeout": {
+                "description": "会话超时(秒)",
+                "hint": "登录后的会话有效时长（秒）。",
+                "type": "int",
+                "default": 3600
+            }
+        }
+    },
+    "global_settings": {
+        "description": "全局设置",
+        "hint": "运行时全局参数，包括 LRU 缓存限制与模型调用超时设置。",
+        "type": "object",
+        "items": {
+            "lru_cache": {
+                "description": "LRU 缓存限制",
+                "hint": "限制同时保留的会话来源数量，避免内存持续增长。",
+                "type": "object",
+                "items": {
+                    "max_origins": {
+                        "description": "最大来源数",
+                        "hint": "最多保留多少个 unified_msg_origin 状态，超出后淘汰最久未使用来源。",
+                        "type": "int",
+                        "default": 500
+                    }
+                }
+            },
+            "timeouts": {
+                "description": "超时设置",
+                "hint": "外部模型调用超时（秒），用于图片转述与 model_choice 判定。",
+                "type": "object",
+                "items": {
+                    "image_caption_sec": {
+                        "description": "图片转述超时(秒)",
+                        "hint": "图片转述调用 LLM 的超时时间。",
+                        "type": "float",
+                        "default": 45
+                    },
+                    "model_choice_sec": {
+                        "description": "模型判定超时(秒)",
+                        "hint": "model_choice 判定调用 LLM 的超时时间。",
+                        "type": "float",
+                        "default": 45
+                    }
+                }
+            }
+        }
+    }
+}

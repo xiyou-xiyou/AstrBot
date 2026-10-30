@@ -1342,6 +1342,17 @@ CONFIG_METADATA_2 = {
                         "proxy": "",
                         "custom_headers": {},
                     },
+                    "ChatGPT Subscription": {
+                        "id": "chatgpt-plan",
+                        "provider": "openai",
+                        "type": "chatgpt_plan",
+                        "provider_type": "chat_completion",
+                        "enable": True,
+                        "key": [],
+                        "api_base": "https://api.openai.com/v1",
+                        "timeout": 120,
+                        "proxy": "",
+                    },
                     "Google Gemini": {
                         "id": "google_gemini",
                         "provider": "google",

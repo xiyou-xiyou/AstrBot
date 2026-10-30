@@ -1,0 +1,5 @@
+name: astrbot_plugin_astrbot_enhance_mode
+desc: 群聊增强插件，提供 React 模式、主动回复、Mention/Quote/Refuse 标签解析、封禁控制、按需图片转述、Memory RAG 与可视化 WebUI（含时区统一与数据清理）。
+author: 阿汐
+version: 0.2.4
+repo: https://github.com/Axi404/astrbot_plugin_astrbot_enhance_mode

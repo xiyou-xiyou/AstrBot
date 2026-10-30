@@ -1,0 +1,6 @@
+name: astrbot_plugin_codex_image
+display_name: Codex 绘图
+desc: Generate and send images through the locally signed-in Codex subscription.
+version: v1.1.2
+author: local
+repo: ""
